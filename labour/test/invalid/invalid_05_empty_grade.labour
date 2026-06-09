@@ -1,0 +1,23 @@
+// Violates constraint 5: every route must have a grade (it is the empty string here).
+// Note: the grade, grid_base_point and identifier are mandatory in the grammar, so the
+// only way to fail this check in a parseable program is to leave one of them empty.
+bouldering_wall "NoGrade" {
+  routes [
+    bouldering_route "Gradeless" {
+      grade: "",
+      grid_base_point { x: 0, y: 0 },
+      holds ["0001", "0002"]
+    }
+  ],
+  volumes [
+    circle {
+      pos: { x: 0, y: 0 },
+      depth: 10,
+      radius: 20,
+      front_holds [
+        hold "0001" { pos: { x: 0, y: 0 }, shape: "1", colours [ red ] },
+        hold "0002" { pos: { x: 1, y: 1 }, shape: "2", colours [ red ] }
+      ]
+    }
+  ]
+}

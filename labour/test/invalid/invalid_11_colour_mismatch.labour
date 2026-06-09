@@ -1,0 +1,22 @@
+// Violates constraint 11: all holds in a route must share a colour (red vs blue here,
+// so the intersection of the colour lists is empty).
+bouldering_wall "ColourClash" {
+  routes [
+    bouldering_route "Clash" {
+      grade: "5A",
+      grid_base_point { x: 0, y: 0 },
+      holds ["0001", "0002"]
+    }
+  ],
+  volumes [
+    circle {
+      pos: { x: 0, y: 0 },
+      depth: 10,
+      radius: 20,
+      front_holds [
+        hold "0001" { pos: { x: 0, y: 0 }, shape: "1", colours [ red ] },
+        hold "0002" { pos: { x: 1, y: 1 }, shape: "2", colours [ blue ] }
+      ]
+    }
+  ]
+}

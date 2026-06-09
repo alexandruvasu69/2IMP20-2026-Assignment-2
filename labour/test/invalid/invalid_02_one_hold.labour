@@ -1,0 +1,20 @@
+// Violates constraint 2: a route must have two or more holds (only one here).
+bouldering_wall "OneHold" {
+  routes [
+    bouldering_route "Tiny" {
+      grade: "5A",
+      grid_base_point { x: 0, y: 0 },
+      holds ["0001"]
+    }
+  ],
+  volumes [
+    circle {
+      pos: { x: 0, y: 0 },
+      depth: 10,
+      radius: 20,
+      front_holds [
+        hold "0001" { pos: { x: 0, y: 0 }, shape: "1", colours [ red ] }
+      ]
+    }
+  ]
+}

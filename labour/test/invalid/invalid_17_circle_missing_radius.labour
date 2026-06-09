@@ -1,0 +1,20 @@
+// Violates constraint 17: a circle volume must have a radius (missing here).
+bouldering_wall "NoRadius" {
+  routes [
+    bouldering_route "R" {
+      grade: "5A",
+      grid_base_point { x: 0, y: 0 },
+      holds ["0001", "0002"]
+    }
+  ],
+  volumes [
+    circle {
+      pos: { x: 0, y: 0 },
+      depth: 10,
+      front_holds [
+        hold "0001" { pos: { x: 0, y: 0 }, shape: "1", colours [ red ] },
+        hold "0002" { pos: { x: 1, y: 1 }, shape: "2", colours [ red ] }
+      ]
+    }
+  ]
+}

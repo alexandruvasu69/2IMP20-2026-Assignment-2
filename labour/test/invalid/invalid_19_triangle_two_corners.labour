@@ -1,0 +1,25 @@
+// Violates constraint 19: a triangle volume must have exactly three corners (two here).
+bouldering_wall "TwoCorners" {
+  routes [
+    bouldering_route "T" {
+      grade: "5A",
+      grid_base_point { x: 0, y: 0 },
+      holds ["0001", "0002"]
+    }
+  ],
+  volumes [
+    triangle {
+      pos: { x: 0, y: 0 },
+      extrusion: { x: 5, y: 5 },
+      depth: 30,
+      corners [
+        { x: 10, y: 0 },
+        { x: -10, y: 0 }
+      ],
+      left_holds [
+        hold "0001" { pos: { x: 1, y: 1 }, shape: "1", colours [ red ] },
+        hold "0002" { pos: { x: 2, y: 2 }, shape: "2", colours [ red ] }
+      ]
+    }
+  ]
+}

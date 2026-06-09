@@ -1,0 +1,14 @@
+// Violates constraint 1: a wall must have at least one route (the routes list is empty).
+bouldering_wall "NoRoute" {
+  routes [],
+  volumes [
+    circle {
+      pos: { x: 0, y: 0 },
+      depth: 10,
+      radius: 20,
+      front_holds [
+        hold "0001" { pos: { x: 0, y: 0 }, shape: "1", colours [ red ] }
+      ]
+    }
+  ]
+}

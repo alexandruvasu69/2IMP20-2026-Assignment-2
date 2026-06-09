@@ -1,0 +1,55 @@
+// Valid program: a route that splits into two sub-routes ending in two different end
+// holds. Exercises: two end holds allowed because the route splits (constraint 7),
+// an angle-defined side hold within range, a rotation within range, and a colour
+// intersection that is non-empty (all holds share "red") despite multicoloured holds.
+bouldering_wall "Wall2" {
+  routes [
+    bouldering_route "Twin finish" {
+      grade: "6B",
+      grid_base_point { x: 5, y: 5 },
+      holds ["0001", {"0002", "0003"}]
+    }
+  ],
+  volumes [
+    circle {
+      pos: { x: 100, y: 100 },
+      depth: 20,
+      radius: 40,
+      front_holds [
+        hold "0001" {
+          pos: { x: 0, y: 0 },
+          shape: "10",
+          colours [ red ],
+          start_hold: 1
+        }
+      ],
+      side_holds [
+        hold "0002" {
+          pos: { angle: 200 },
+          shape: "11",
+          colours [ red, blue ],
+          end_hold
+        }
+      ]
+    },
+    triangle {
+      pos: { x: 0, y: 0 },
+      extrusion: { x: 5, y: 5 },
+      depth: 30,
+      corners [
+        { x: 10, y: 0 },
+        { x: -10, y: 0 },
+        { x: 0, y: 10 }
+      ],
+      bottom_holds [
+        hold "0003" {
+          pos: { x: 3, y: 4 },
+          shape: "12",
+          rotation: 45,
+          colours [ red, green ],
+          end_hold
+        }
+      ]
+    }
+  ]
+}

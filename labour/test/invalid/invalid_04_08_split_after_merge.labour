@@ -1,0 +1,29 @@
+// Violates constraints 4 and 8 (they coincide): the route splits, merges, then splits
+// again. A split step always has exactly two branches, so the only way to exceed two
+// sub-routes (constraint 4) is to start a second split region, which necessarily happens
+// after a merge (constraint 8). Mirrors the invalid route of Listing 5.
+bouldering_wall "BadSplit" {
+  routes [
+    bouldering_route "Resplit" {
+      grade: "5A",
+      grid_base_point { x: 0, y: 0 },
+      holds ["0001", "0002", {"0003", "0004"}, "0007", {"0005", "0006"}]
+    }
+  ],
+  volumes [
+    circle {
+      pos: { x: 0, y: 0 },
+      depth: 10,
+      radius: 20,
+      front_holds [
+        hold "0001" { pos: { x: 0, y: 0 }, shape: "1", colours [ red ] },
+        hold "0002" { pos: { x: 1, y: 1 }, shape: "2", colours [ red ] },
+        hold "0003" { pos: { x: 2, y: 2 }, shape: "3", colours [ red ] },
+        hold "0004" { pos: { x: 3, y: 3 }, shape: "4", colours [ red ] },
+        hold "0005" { pos: { x: 4, y: 4 }, shape: "5", colours [ red ] },
+        hold "0006" { pos: { x: 5, y: 5 }, shape: "6", colours [ red ] },
+        hold "0007" { pos: { x: 6, y: 6 }, shape: "7", colours [ red ] }
+      ]
+    }
+  ]
+}
