@@ -3,5 +3,5 @@ Project-Name: labour
 Source: src
 Language: labour::Plugin
 Language-Name: BoulderingWall
-Language-Extensions: lbr
+Language-Extensions: labour
 Require-Libraries: |lib://rascal-lsp/|
