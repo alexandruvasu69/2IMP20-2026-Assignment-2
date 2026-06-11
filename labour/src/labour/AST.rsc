@@ -3,11 +3,18 @@ module labour::AST
 /*
  * Define the Abstract Syntax for LaBouR
  * - Hint: make sure there is an almost one-to-one correspondence with the grammar in Syntax.rsc
+ * The AST stays close to the grammar to keep the CST-to-AST translation simple.
  */
 
+/*
+ * Root node for a full wall description.
+ */
 data ASTBoulderingWall(loc src=|unknown:///|)
   = boulderingWall(str id, list[ASTRoute] routes, list[ASTVolume] volumes);
 
+/*
+ * Route definitions and route steps.
+ */
 data ASTRoute
   = route(str id, str grade, ASTCoordinate gridBasePoint, list[ASTRouteStep] steps);
 
@@ -15,9 +22,16 @@ data ASTRouteStep
   = normalHold(str holdId)
   | splitHold(str leftHoldId, str rightHoldId);
 
+/*
+ * Shared coordinate representation.
+ */
 data ASTCoordinate
   = coordinate(int x, int y);
 
+/*
+ * Volume definitions and their properties.
+ * Separate constructors make the two volume variants explicit in later checks.
+ */
 data ASTVolume
   = circle(list[ASTCircleProperty] circleProperties)
   | triangle(list[ASTTriangleProperty] triangleProperties);
@@ -38,6 +52,10 @@ data ASTTriangleProperty
   | triangleRightHolds(list[ASTHold] holds)
   | triangleBottomHolds(list[ASTHold] holds);
 
+/*
+ * Hold definitions and their properties.
+ * Properties stay in lists so validation can detect missing or repeated fields later.
+ */
 data ASTHold
   = hold(str id, list[ASTHoldProperty] properties);
 
@@ -49,10 +67,16 @@ data ASTHoldProperty
   | holdEnd()
   | holdRotation(int rotation);
 
+/*
+ * Holds can use absolute coordinates or an angle.
+ */
 data ASTHoldPosition
   = xyPosition(ASTCoordinate coordinate)
   | anglePosition(int angle);
 
+/*
+ * Enumerated hold colours.
+ */
 data ASTColour
   = white()
   | yellow()

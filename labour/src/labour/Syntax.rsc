@@ -2,6 +2,7 @@ module labour::Syntax
 
 /*
  * Define a concrete syntax for LaBouR. The language's specification is available in the PDF (Section 2)
+ * This module only describes the shape of the language; semantic checks stay separate.
  */
 
 /*
@@ -12,6 +13,9 @@ module labour::Syntax
 
 layout Layout = WhitespaceOrComment*;
 
+/*
+ * Basic lexical elements used by the grammar.
+ */
 lexical WhitespaceOrComment
   = [\t-\n\r\ ]
   | "//" ![\n\r]* $
@@ -26,6 +30,9 @@ syntax StringLiteral = stringLiteral: STRING;
 syntax IntLiteral = intLiteral: INT;
 syntax HoldId = holdId: HOLDID;
 
+/*
+ * Top-level rule for a complete wall specification.
+ */
 start syntax BoulderingWall
   = wall: "bouldering_wall" StringLiteral wallId "{"
       "routes" "[" RouteList routes "]" ","
@@ -34,6 +41,10 @@ start syntax BoulderingWall
 
 /*
  * Lists
+ * These named list rules are here to simplify the cst to ast translation.
+ * Rascal's list notation ({Something ","}*) produces a CST shape that is
+ * hard to pattern-match during translation, so we convert these lists in 
+ * separate helpers.
  */
 syntax RouteList
   = routeList: {Route ","}* routes;
@@ -77,7 +88,7 @@ syntax RouteStep
   | splitHold: "{" HoldId left "," HoldId right "}";
 
 /*
- * Coordinates
+ * Coordinates used for walls, holds, and volumes.
  */
 syntax Coordinate
   = coordinate: "{" "x" ":" IntLiteral x "," "y" ":" IntLiteral y "}";
@@ -126,11 +137,17 @@ syntax HoldProperty
   | holdRotation: "rotation" ":" IntLiteral rotation
   ;
 
+/*
+ * A hold position can be absolute or angle-based.
+ */
 syntax HoldPosition
   = xyPosition: Coordinate coordinate
   | anglePosition: "{" "angle" ":" IntLiteral angle "}"
   ;
 
+/*
+ * Allowed colour values for holds.
+ */
 syntax Colour
   = white: "white"
   | yellow: "yellow"

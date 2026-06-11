@@ -13,13 +13,20 @@ extend labour::Syntax;
  * Hint: Use switch to do case distinction with concrete patterns
  * Map regular CST arguments (e.g., *, +, ?) to lists
  * Map lexical nodes to Rascal primitive types (bool, int, str)
+ * Keeping this translation in its own module separates parsing details from checking logic.
  */
 
+/*
+ * Remove the quotes around string lexical values.
+ */
 str unquote(Tree t) {
   str s = unparse(t);
   return substring(s, 1, size(s) - 1);
 }
 
+/*
+ * Convert an integer literal subtree to a Rascal int.
+ */
 int toIntLiteral(Tree t) {
   return toInt(unparse(t));
 }
@@ -36,7 +43,9 @@ public ASTBoulderingWall cst2ast((start[BoulderingWall]) `bouldering_wall <Strin
 }
 
 /*
- * List conversions
+ * List conversions collect repeated CST nodes into AST lists.
+ * These helpers exist because the separated-list CST nodes are easier to process here
+ * than directly inside each parent translation rule.
  */
 public list[ASTRoute] cst2astRouteList(RouteList routeListCst) {
   list[ASTRoute] result = [];
@@ -315,7 +324,7 @@ public ASTHoldProperty cst2astHoldProperty(HoldProperty property) {
 }
 
 /*
- * Hold positions
+ * Hold positions can be coordinates or angles.
  */
 public ASTHoldPosition cst2astHoldPosition(HoldPosition position) {
   switch (position) {
