@@ -1,0 +1,34 @@
+// Invalid program: triangle holds are not side_holds, so they must use x/y positions.
+bouldering_wall "TriangleAngle" {
+  routes [
+    bouldering_route "Wrong triangle hold" {
+      grade: "6A",
+      grid_base_point { x: 0, y: 0 },
+      holds ["0001", "0002"]
+    }
+  ],
+  volumes [
+    triangle {
+      pos: { x: 0, y: 0 },
+      extrusion: { x: 10, y: 5 },
+      depth: 20,
+      corners [
+        { x: 10, y: 0 },
+        { x: -10, y: 0 },
+        { x: 0, y: 10 }
+      ],
+      left_holds [
+        hold "0001" {
+          pos: { angle: 45 },
+          shape: "1",
+          colours [ blue ]
+        },
+        hold "0002" {
+          pos: { x: 2, y: 4 },
+          shape: "2",
+          colours [ blue ]
+        }
+      ]
+    }
+  ]
+}
