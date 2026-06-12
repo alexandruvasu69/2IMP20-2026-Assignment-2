@@ -132,7 +132,9 @@ bool checkBoulderWallConfiguration(ASTBoulderingWall wall) {
     checkHoldRequiredProperties(wall),     // 12
     checkAngleAndRotationRanges(wall),     // 13, 14
     checkCircleProperties(wall),           // 17
-    checkTriangleProperties(wall)          // 19
+    checkTriangleProperties(wall),         // 19
+    checkHoldReferencesExist(wall, defs),
+    checkUniqueIds(wall)
   ];
 
   return (true | it && r | r <- results);
@@ -350,6 +352,44 @@ bool checkTriangleProperties(ASTBoulderingWall wall) {
       println("FAIL [19]: a triangle volume must have exactly 3 corners (has <size(corners[0])>)");
       ok = false;
     }
+  }
+  return ok;
+}
+
+// Extra: every hold id referenced in a route must be defined in some volume.
+// The PDF states that routes are defined based on the holds declared in volumes, so a
+// dangling reference is always an error even though it is not a numbered constraint.
+bool checkHoldReferencesExist(ASTBoulderingWall wall, map[str, ASTHold] defs) {
+  bool ok = true;
+  for (r <- wall.routes, id <- routeHoldIds(r)) {
+    if (id notin defs) {
+      println("FAIL [ref]: route \'<r.id>\' references undefined hold \'<id>\'");
+      ok = false;
+    }
+  }
+  return ok;
+}
+
+// Extra: hold ids and route ids must each be unique within the wall.
+// Section 2.1.1 says a hold has "a unique hold identifier"; section 2.1.3 says the same
+// for routes. The grammar cannot enforce uniqueness, so we check it here.
+bool checkUniqueIds(ASTBoulderingWall wall) {
+  bool ok = true;
+  set[str] seenHolds = {};
+  for (h <- allWallHolds(wall)) {
+    if (h.id in seenHolds) {
+      println("FAIL [unique]: hold \'<h.id>\' is defined more than once");
+      ok = false;
+    }
+    seenHolds += {h.id};
+  }
+  set[str] seenRoutes = {};
+  for (r <- wall.routes) {
+    if (r.id in seenRoutes) {
+      println("FAIL [unique]: route \'<r.id>\' is defined more than once");
+      ok = false;
+    }
+    seenRoutes += {r.id};
   }
   return ok;
 }
