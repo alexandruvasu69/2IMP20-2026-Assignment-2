@@ -80,6 +80,9 @@ set[ASTColour] getColours(ASTHold h) {
   return {};
 }
 
+bool hasXYPosition(ASTHold h) = any(holdPos(xyPosition(_)) <- h.properties);
+bool hasAnglePosition(ASTHold h) = any(holdPos(anglePosition(_)) <- h.properties);
+
 /*
  * A "split region" is a run of consecutive split steps. The tricky bit is that Listing 4
  * has two split steps in a row but that's still a single split (the two branches just run
@@ -133,6 +136,7 @@ bool checkBoulderWallConfiguration(ASTBoulderingWall wall) {
     checkRouteSameColour(wall, defs),      // 11
     checkHoldRequiredProperties(wall),     // 12
     checkUniquePropertyDefinitions(wall),  // extra consistency checks on property lists
+    checkVolumeHoldPositionKinds(wall),    // volume holds: only circle side_holds may use angles
     checkAngleAndRotationRanges(wall),     // 13, 14
     checkCircleProperties(wall),           // 17
     checkTriangleProperties(wall)          // 19
@@ -399,6 +403,55 @@ bool checkUniquePropertyDefinitions(ASTBoulderingWall wall) {
     if (size([true | triangleBottomHolds(_) <- ps]) > 1) {
       println("FAIL [props]: a triangle volume defines bottom_holds more than once");
       ok = false;
+    }
+  }
+
+  return ok;
+}
+
+// Circle side_holds are the only volume holds that may use angle-based positions. Every
+// other volume hold must use a coordinate-based position instead.
+bool checkVolumeHoldPositionKinds(ASTBoulderingWall wall) {
+  bool ok = true;
+
+  for (circle(ps) <- wall.volumes, circleFrontHolds(hs) <- ps, h <- hs) {
+    if (hasAnglePosition(h)) {
+      println("FAIL [props]: circle front hold \'<h.id>\' must use an x/y position");
+      ok = false;
+    }
+  }
+
+  for (circle(ps) <- wall.volumes, circleSideHolds(hs) <- ps, h <- hs) {
+    if (hasXYPosition(h)) {
+      println("FAIL [props]: circle side hold \'<h.id>\' must use an angle position");
+      ok = false;
+    }
+  }
+
+  for (triangle(ps) <- wall.volumes, p <- ps) {
+    switch (p) {
+      case triangleLeftHolds(hs):
+        for (h <- hs) {
+          if (hasAnglePosition(h)) {
+            println("FAIL [props]: triangle left hold \'<h.id>\' must use an x/y position");
+            ok = false;
+          }
+        }
+      case triangleRightHolds(hs):
+        for (h <- hs) {
+          if (hasAnglePosition(h)) {
+            println("FAIL [props]: triangle right hold \'<h.id>\' must use an x/y position");
+            ok = false;
+          }
+        }
+      case triangleBottomHolds(hs):
+        for (h <- hs) {
+          if (hasAnglePosition(h)) {
+            println("FAIL [props]: triangle bottom hold \'<h.id>\' must use an x/y position");
+            ok = false;
+          }
+        }
+      default: ;
     }
   }
 
