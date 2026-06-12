@@ -23,6 +23,8 @@ import String;
  *   - #18/#20 a circle can only hold front/side holds and a triangle only left/right/bottom
  *         holds (their property rules don't allow anything else).
  * Everything else is checked below, one function per constraint so each has its own test.
+ * We also reject repeated or conflicting property definitions, since properties are stored
+ * as lists in the AST and ambiguous duplicates would otherwise be accepted silently.
  *
  * Every check returns a bool and prints a message when it fails (handy when running the
  * tests). We run all of them and AND the results, so a program reports every problem it has,
@@ -130,6 +132,7 @@ bool checkBoulderWallConfiguration(ASTBoulderingWall wall) {
     checkWallAndRouteIds(wall),            // 10
     checkRouteSameColour(wall, defs),      // 11
     checkHoldRequiredProperties(wall),     // 12
+    checkUniquePropertyDefinitions(wall),  // extra consistency checks on property lists
     checkAngleAndRotationRanges(wall),     // 13, 14
     checkCircleProperties(wall),           // 17
     checkTriangleProperties(wall)          // 19
@@ -297,6 +300,108 @@ bool checkHoldRequiredProperties(ASTBoulderingWall wall) {
       ok = false;
     }
   }
+  return ok;
+}
+
+// Extra consistency checks: property-list constructs should not define the same field
+// more than once, and a hold position should not mix coordinate- and angle-based forms.
+bool checkUniquePropertyDefinitions(ASTBoulderingWall wall) {
+  bool ok = true;
+
+  for (h <- allWallHolds(wall)) {
+    list[ASTHoldPosition] positions = [p | holdPos(p) <- h.properties];
+    bool hasXY = false;
+    bool hasAngle = false;
+    for (p <- positions) {
+      switch (p) {
+        case xyPosition(_): hasXY = true;
+        case anglePosition(_): hasAngle = true;
+      }
+    }
+    if (size(positions) > 1) {
+      if (hasXY && hasAngle) {
+        println("FAIL [props]: hold \'<h.id>\' mixes coordinate and angle position definitions");
+      } else {
+        println("FAIL [props]: hold \'<h.id>\' defines position more than once");
+      }
+      ok = false;
+    }
+    if (size([true | holdShape(_) <- h.properties]) > 1) {
+      println("FAIL [props]: hold \'<h.id>\' defines shape more than once");
+      ok = false;
+    }
+    if (size([true | holdColours(_) <- h.properties]) > 1) {
+      println("FAIL [props]: hold \'<h.id>\' defines colours more than once");
+      ok = false;
+    }
+    if (size([true | holdStart(_) <- h.properties]) > 1) {
+      println("FAIL [props]: hold \'<h.id>\' defines start_hold more than once");
+      ok = false;
+    }
+    if (size([true | holdEnd() <- h.properties]) > 1) {
+      println("FAIL [props]: hold \'<h.id>\' defines end_hold more than once");
+      ok = false;
+    }
+    if (size([true | holdRotation(_) <- h.properties]) > 1) {
+      println("FAIL [props]: hold \'<h.id>\' defines rotation more than once");
+      ok = false;
+    }
+  }
+
+  for (circle(ps) <- wall.volumes) {
+    if (size([true | circlePos(_) <- ps]) > 1) {
+      println("FAIL [props]: a circle volume defines position more than once");
+      ok = false;
+    }
+    if (size([true | circleDepth(_) <- ps]) > 1) {
+      println("FAIL [props]: a circle volume defines depth more than once");
+      ok = false;
+    }
+    if (size([true | circleRadius(_) <- ps]) > 1) {
+      println("FAIL [props]: a circle volume defines radius more than once");
+      ok = false;
+    }
+    if (size([true | circleFrontHolds(_) <- ps]) > 1) {
+      println("FAIL [props]: a circle volume defines front_holds more than once");
+      ok = false;
+    }
+    if (size([true | circleSideHolds(_) <- ps]) > 1) {
+      println("FAIL [props]: a circle volume defines side_holds more than once");
+      ok = false;
+    }
+  }
+
+  for (triangle(ps) <- wall.volumes) {
+    if (size([true | trianglePos(_) <- ps]) > 1) {
+      println("FAIL [props]: a triangle volume defines position more than once");
+      ok = false;
+    }
+    if (size([true | triangleDepth(_) <- ps]) > 1) {
+      println("FAIL [props]: a triangle volume defines depth more than once");
+      ok = false;
+    }
+    if (size([true | triangleExtrusion(_) <- ps]) > 1) {
+      println("FAIL [props]: a triangle volume defines extrusion more than once");
+      ok = false;
+    }
+    if (size([true | triangleCorners(_) <- ps]) > 1) {
+      println("FAIL [props]: a triangle volume defines corners more than once");
+      ok = false;
+    }
+    if (size([true | triangleLeftHolds(_) <- ps]) > 1) {
+      println("FAIL [props]: a triangle volume defines left_holds more than once");
+      ok = false;
+    }
+    if (size([true | triangleRightHolds(_) <- ps]) > 1) {
+      println("FAIL [props]: a triangle volume defines right_holds more than once");
+      ok = false;
+    }
+    if (size([true | triangleBottomHolds(_) <- ps]) > 1) {
+      println("FAIL [props]: a triangle volume defines bottom_holds more than once");
+      ok = false;
+    }
+  }
+
   return ok;
 }
 

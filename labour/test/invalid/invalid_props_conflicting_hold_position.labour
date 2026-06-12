@@ -1,0 +1,32 @@
+// Invalid program: hold 0001 repeats the position property and mixes coordinate- and
+// angle-based positions. Property lists are allowed by the grammar, but the checker
+// rejects repeated or conflicting definitions.
+bouldering_wall "ConflictingProps" {
+  routes [
+    bouldering_route "Duplicate pos" {
+      grade: "5A",
+      grid_base_point { x: 0, y: 0 },
+      holds ["0001", "0002"]
+    }
+  ],
+  volumes [
+    circle {
+      pos: { x: 0, y: 0 },
+      depth: 10,
+      radius: 20,
+      front_holds [
+        hold "0001" {
+          pos: { x: 0, y: 0 },
+          pos: { angle: 30 },
+          shape: "1",
+          colours [ red ]
+        },
+        hold "0002" {
+          pos: { x: 1, y: 1 },
+          shape: "2",
+          colours [ red ]
+        }
+      ]
+    }
+  ]
+}
